@@ -40,3 +40,23 @@ jobs:
 
       - name: Push image to GHCR
         run: docker push ghcr.io/ashyt-cloud/ci-lab:${{ github.sha }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: ci
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Depoloy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secretes.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ashyt-cloud --password-stdin
+            docker pull ghcr.io/ashyt-cloud/ci-lab:${{ github.sha }}
+            docker stop ci-lab || true
+            docker rm ci-lab || true
+            docker run -d --name ci-lab -p 8080:8080 ghcr.io/ashyt-cloud/ci-lab:${{ github.sha }}
+            echo "Deployed ${{ github.sha }}"
