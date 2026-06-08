@@ -30,3 +30,8 @@ devops-journey/
 
 ## Daily logs
 - [June 4](daily-logs/2026-06-04.md) — full pipeline end to end
+
+## Instance reference
+- Main EC2 instance ID: i-088231746c326626f
+- Region: us-east-1
+- After every start: update EC2_HOST secret with new public IP
