@@ -58,7 +58,7 @@ resource "aws_security_group" "devops_sg" {
 
 # EC2 instance
 resource "aws_instance" "devops_lab" {
-  ami                    = "ami-05cf1e9f73fbad2e2"  # Ubuntu 22.04 us-east-1
+  ami                    = "ami-05cf1e9f73fbad2e2" # Ubuntu 22.04 us-east-1
   instance_type          = "t3.medium"
   key_name               = aws_key_pair.devops_key.key_name
   vpc_security_group_ids = [aws_security_group.devops_sg.id]
