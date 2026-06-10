@@ -3,8 +3,14 @@ name: CI Pipeline
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'ci-cd/**'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'ci-cd/**'
+      - '.github/workflows/ci.yml'
 
 permissions:
   contents: read
@@ -13,6 +19,21 @@ permissions:
 jobs:
   ci:
     runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: appdb
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -30,10 +51,15 @@ jobs:
         run: flake8 ci-cd/01-github-actions/ci-lab/ --max-line-length=88
 
       - name: Run tests
+        env:
+          DB_HOST: localhost
+          DB_NAME: appdb
+          DB_USER: postgres
+          DB_PASSWORD: postgres
         run: pytest ci-cd/01-github-actions/ci-lab/tests/ -v
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/ashyt-cloud/ci-lab:${{ github.sha }} ci-cd/01-github-actions/ci-lab
+        run: docker build -t ghcr.io/ashyt-cloud/ci-lab:${{ github.sha }} ci-cd/01-github-actions/ci-lab/
 
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -47,16 +73,14 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Depoloy to EC2
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ashyt-cloud --password-stdin
-            docker pull ghcr.io/ashyt-cloud/ci-lab:${{ github.sha }}
-            docker stop ci-lab || true
-            docker rm ci-lab || true
-            docker run -d --name ci-lab -p 8080:8080 ghcr.io/ashyt-cloud/ci-lab:${{ github.sha }}
+            cd /home/ubuntu/devops-journey/ci-cd/01-github-actions/ci-lab
+            docker compose pull
+            docker compose up -d
             echo "Deployed ${{ github.sha }}"
