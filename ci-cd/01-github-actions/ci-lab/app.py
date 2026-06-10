@@ -62,7 +62,11 @@ def save_calculation(operation, a, b, result):
 def get_history():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT operation, a, b, result FROM calculations ORDER BY id DESC LIMIT 10")
+    query = (
+        "SELECT operation, a, b, result FROM calculations "
+        "ORDER BY id DESC LIMIT 10"
+    )
+    cur.execute(query)
     rows = cur.fetchall()
     cur.close()
     conn.close()

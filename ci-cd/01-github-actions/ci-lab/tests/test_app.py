@@ -1,7 +1,5 @@
 import pytest
-import psycopg2
-import os
-from app import add, subtract, multiply, divide, get_db_connection, save_calculation, get_history
+from app import add, subtract, multiply, divide, save_calculation, get_history
 
 
 def test_add():
