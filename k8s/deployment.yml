@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ci-lab
+  labels:
+    app: ci-lab
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ci-lab
+  template:
+    metadata:
+      labels:
+        app: ci-lab
+    spec:
+      containers:
+        - name: ci-lab
+          image: ghcr.io/ashyt-cloud/ci-lab:4cfd01ffba24c26d5d8687c555c41b112800a980
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: postgres
+            - name: DB_NAME
+              value: appdb
+            - name: DB_USER
+              value: postgres
+            - name: DB_PASSWORD
+              value: postgres
