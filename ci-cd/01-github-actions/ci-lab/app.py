@@ -93,7 +93,7 @@ class Handler(BaseHTTPRequestHandler):
         save_calculation("add", 2, 3, result)
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(f"v3 - add(2,3)={result"BROKEN.encode())
+        self.wfile.write(f"v2 - add(2,3)={result}".encode())
 
     def log_message(self, format, *args):
         pass
