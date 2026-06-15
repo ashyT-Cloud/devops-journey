@@ -20,12 +20,20 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: ci-lab-config
           env:
-            - name: DB_HOST
-              value: postgres
-            - name: DB_NAME
-              value: appdb
-            - name: DB_USER
-              value: postgres
+           # - name: DB_HOST
+           #   value: postgres
+           # - name: DB_NAME
+           #   value: appdb
+           # - name: DB_USER
+           #   value: postgres
+           # - name: DB_PASSWORD
+           #   value: postgres
             - name: DB_PASSWORD
-              value: postgres
+              valueFrom:
+                secretKeyRef:
+                  name: ci-lab-secret
+                  key: DB_PASSWORD
