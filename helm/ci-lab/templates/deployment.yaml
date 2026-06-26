@@ -17,7 +17,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}
           image: {{ .Values.app.image }}:{{ .Values.app.tag }}
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.app.port }}
           envFrom:

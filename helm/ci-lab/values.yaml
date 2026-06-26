@@ -11,5 +11,5 @@ db:
   password: postgres
 
 service:
-  type: NodePort
+  type: LoadBalancer
   nodePort: 30080

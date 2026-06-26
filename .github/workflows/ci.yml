@@ -80,7 +80,10 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ubuntu/devops-journey/ci-cd/01-github-actions/ci-lab
-            docker compose pull
-            docker compose up -d
-            echo "Deployed ${{ github.sha }}"
+            cd /home/ubuntu/devops-journey
+
+            helm upgrade --install ci-lab helm/ci-lab \
+              --set image.repository=ghcr.io/ashyt-cloud/ci-lab \
+              --set image.tag=${{ github.sha }}
+
+            kubectl rollout status deployment/ci-lab
