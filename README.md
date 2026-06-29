@@ -33,5 +33,6 @@ devops-journey/
 
 ## Instance reference
 - Main EC2 instance ID: i-088231746c326626f
+- 
 - Region: us-east-1
 - After every start: update EC2_HOST secret with new public IP
